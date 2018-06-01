@@ -1,0 +1,5 @@
+package zerobouce
+
+struct ZeroBounce{
+
+}
