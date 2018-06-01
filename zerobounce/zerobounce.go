@@ -1,5 +1,0 @@
-package zerobouce
-
-struct ZeroBounce{
-
-}
