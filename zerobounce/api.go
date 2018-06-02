@@ -5,10 +5,23 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 )
 
 // URI -
 const URI = "https://api.zerobounce.net/v1"
+
+// BuildURL -
+func (z *ZeroBounce) BuildURL(endpoint string, params ...url.Values) string {
+	value := url.Values{}
+
+	if len(params) == 1 {
+		value = params[0]
+	}
+
+	value.Set("apikey", z.Apikey)
+	return fmt.Sprintf("%s/%s?%s", URI, endpoint, value.Encode())
+}
 
 // ZeroBounce -
 type ZeroBounce struct {
@@ -80,9 +93,7 @@ func (z *ZeroBounce) Validate(email string) ValidateResponse {
 
 // GetCredits -
 func (z *ZeroBounce) GetCredits() (string, error) {
-	url := fmt.Sprintf("%s/%s?apikey=%s", URI, "getcredits", z.Apikey)
-
-	response, err := http.Get(url)
+	response, err := http.Get(z.BuildURL("getcredits"))
 
 	if err != nil {
 		return "", err

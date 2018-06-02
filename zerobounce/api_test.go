@@ -1,6 +1,7 @@
 package zerobounce
 
 import (
+	"net/url"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -32,4 +33,17 @@ func Test_should_get_error_when_server_response_status_500(t *testing.T) {
 	_, error := zero.GetCredits()
 
 	assert.NotNil(t, error, nil)
+}
+
+func Test_should_build_url_with_email(t *testing.T) {
+	params := url.Values{}
+	params.Set("email", "jonas@example.com")
+	zero := ZeroBounce{Apikey: "xxxxxxx"}
+
+	assert.Equal(t, zero.BuildURL("score", params), "https://api.zerobounce.net/v1/score?apikey=xxxxxxx&email=jonas%40example.com")
+}
+
+func Test_should_get_url_without_query_string_params(t *testing.T) {
+	zero := ZeroBounce{Apikey: "xxxxxxx"}
+	assert.Equal(t, zero.BuildURL("score"), "https://api.zerobounce.net/v1/score?apikey=xxxxxxx")
 }
