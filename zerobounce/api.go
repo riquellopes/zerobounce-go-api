@@ -54,7 +54,7 @@ type ValidateWithipResponse struct {
 
 // GetCreditsResponse -
 type GetCreditsResponse struct {
-	Credits int `json:"Credits"`
+	Credits string `json:"Credits"`
 }
 
 // Validate -
@@ -78,8 +78,23 @@ func (z *ZeroBounce) Validate(email string) ValidateResponse {
 }
 
 // GetCredits -
-func (z *ZeroBounce) GetCredits() {
+func (z *ZeroBounce) GetCredits() string {
+	url := fmt.Sprintf("%s/%s?apikey=%s", URI, "getcredits", z.Apikey)
 
+	response, err := http.Get(url)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer response.Body.Close()
+	var credit GetCreditsResponse
+
+	if err := json.NewDecoder(response.Body).Decode(&credit); err != nil {
+		fmt.Println(err)
+	}
+
+	return credit.Credits
 }
 
 // ValidateWithip -
