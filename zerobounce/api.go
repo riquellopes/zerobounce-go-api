@@ -23,9 +23,34 @@ func (z *ZeroBounce) BuildURL(endpoint string, params ...url.Values) string {
 	return fmt.Sprintf("%s/%s?%s", URI, endpoint, value.Encode())
 }
 
+// Request -
+func Request(url string, object ResponseBase) error {
+	response, err := http.Get(url)
+
+	if err != nil {
+		return err
+	}
+
+	if response.StatusCode != 200 {
+		return errors.New("server error")
+	}
+
+	defer response.Body.Close()
+
+	if err := json.NewDecoder(response.Body).Decode(&object); err != nil {
+		return err
+	}
+
+	return nil
+}
+
 // ZeroBounce -
 type ZeroBounce struct {
 	Apikey string
+}
+
+// ResponseBase -
+type ResponseBase interface {
 }
 
 // ValidateResponse -
@@ -93,24 +118,10 @@ func (z *ZeroBounce) Validate(email string) ValidateResponse {
 
 // GetCredits -
 func (z *ZeroBounce) GetCredits() (string, error) {
-	response, err := http.Get(z.BuildURL("getcredits"))
+	credit := &GetCreditsResponse{}
+	err := Request(z.BuildURL("getcredits"), credit)
 
-	if err != nil {
-		return "", err
-	}
-
-	if response.StatusCode != 200 {
-		return "", errors.New("server error")
-	}
-
-	defer response.Body.Close()
-	var credit GetCreditsResponse
-
-	if err := json.NewDecoder(response.Body).Decode(&credit); err != nil {
-		return "", err
-	}
-
-	return credit.Credits, nil
+	return credit.Credits, err
 }
 
 // ValidateWithip -
