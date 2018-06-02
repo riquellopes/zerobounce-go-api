@@ -97,23 +97,14 @@ type GetCreditsResponse struct {
 }
 
 // Validate -
-func (z *ZeroBounce) Validate(email string) ValidateResponse {
-	url := fmt.Sprintf("%s/%s?apikey=%s&email=%s", URI, "validate", z.Apikey, email)
+func (z *ZeroBounce) Validate(email string) (*ValidateResponse, error) {
+	params := url.Values{}
+	params.Set("email", email)
 
-	response, err := http.Get(url)
+	validate := &ValidateResponse{}
 
-	if err != nil {
-		fmt.Println(err)
-	}
-
-	defer response.Body.Close()
-	var validate ValidateResponse
-
-	if err := json.NewDecoder(response.Body).Decode(&validate); err != nil {
-		fmt.Println(err)
-	}
-
-	return validate
+	err := Request(z.BuildURL("validate", params), validate)
+	return validate, err
 }
 
 // GetCredits -

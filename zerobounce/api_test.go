@@ -82,7 +82,7 @@ func Test_status_should_be_valid_when_called_validate_service(t *testing.T) {
 		JSON(response)
 
 	zero := ZeroBounce{Apikey: "xxxxxxx"}
-	result := zero.Validate("contato@heriquelopes.com.br")
+	result, _ := zero.Validate("contato@heriquelopes.com.br")
 
 	assert.Equal(t, result.Address, response.Address)
 	assert.Equal(t, result.Status, response.Status)
