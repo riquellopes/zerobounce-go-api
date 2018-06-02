@@ -1,6 +1,7 @@
 package zerobounce
 
 import (
+	"encoding/json"
 	"fmt"
 	"net/http"
 )
@@ -57,15 +58,23 @@ type GetCreditsResponse struct {
 }
 
 // Validate -
-func (z *ZeroBounce) Validate(email string) string {
+func (z *ZeroBounce) Validate(email string) ValidateResponse {
+	url := fmt.Sprintf("%s/%s?apikey=%s&email=%s", URI, "validate", z.Apikey, email)
 
-	resp, err := http.Get(fmt.Sprintf("%s/%s", URI, "validate"))
+	response, err := http.Get(url)
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	return ""
+	defer response.Body.Close()
+	var validate ValidateResponse
+
+	if err := json.NewDecoder(response.Body).Decode(&validate); err != nil {
+		fmt.Println(err)
+	}
+
+	return validate
 }
 
 // GetCredits -
@@ -74,6 +83,28 @@ func (z *ZeroBounce) GetCredits() {
 }
 
 // ValidateWithip -
-func (z *ZeroBounce) ValidateWithip(email, ipaddress string) {
+func (z *ZeroBounce) ValidateWithip(email string, ipaddress ...string) ValidateWithipResponse {
+	addr := "99.123.12.122"
 
+	if len(ipaddress) > 0 {
+		addr = ipaddress[0]
+	}
+
+	url := fmt.Sprintf(
+		"%s/%s?apikey=%s&email=%s&ipaddress=%s", URI, "validatewithip", z.Apikey, email, addr)
+
+	response, err := http.Get(url)
+
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	defer response.Body.Close()
+	var validate ValidateWithipResponse
+
+	if err := json.NewDecoder(response.Body).Decode(&validate); err != nil {
+		fmt.Println(err)
+	}
+
+	return validate
 }
