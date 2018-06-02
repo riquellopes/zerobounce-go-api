@@ -125,28 +125,29 @@ func (z *ZeroBounce) GetCredits() (string, error) {
 }
 
 // ValidateWithip -
-func (z *ZeroBounce) ValidateWithip(email string, ipaddress ...string) ValidateWithipResponse {
+func (z *ZeroBounce) ValidateWithip(email string, ipaddress ...string) (ValidateWithipResponse, error) {
+	var validate ValidateWithipResponse
+	params := url.Values{}
 	addr := "99.123.12.122"
 
 	if len(ipaddress) > 0 {
 		addr = ipaddress[0]
 	}
 
-	url := fmt.Sprintf(
-		"%s/%s?apikey=%s&email=%s&ipaddress=%s", URI, "validatewithip", z.Apikey, email, addr)
+	params.Set("ipaddress", addr)
+	params.Set("email", email)
 
-	response, err := http.Get(url)
+	response, err := http.Get(z.BuildURL("validatewithip", params))
 
 	if err != nil {
-		fmt.Println(err)
+		return validate, err
 	}
 
 	defer response.Body.Close()
-	var validate ValidateWithipResponse
 
 	if err := json.NewDecoder(response.Body).Decode(&validate); err != nil {
-		fmt.Println(err)
+		return validate, err
 	}
 
-	return validate
+	return validate, nil
 }

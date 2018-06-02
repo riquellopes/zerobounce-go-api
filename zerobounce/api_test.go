@@ -47,3 +47,23 @@ func Test_should_get_url_without_query_string_params(t *testing.T) {
 	zero := ZeroBounce{Apikey: "xxxxxxx"}
 	assert.Equal(t, zero.BuildURL("score"), "https://api.zerobounce.net/v1/score?apikey=xxxxxxx")
 }
+
+func Test_status_should_be_valid(t *testing.T) {
+	defer gock.Off()
+
+	response := ValidateWithipResponse{
+		Address: "flowerjill@aol.com",
+		Status:  "Valid",
+	}
+
+	gock.New(URI).
+		Get("/validatewithip").
+		Reply(200).
+		JSON(response)
+
+	zero := ZeroBounce{Apikey: "xxxxxxx"}
+	result, _ := zero.ValidateWithip("contato@heriquelopes.com.br")
+
+	assert.Equal(t, result.Address, response.Address)
+	assert.Equal(t, result.Status, response.Status)
+}
