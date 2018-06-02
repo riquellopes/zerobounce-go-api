@@ -125,8 +125,8 @@ func (z *ZeroBounce) GetCredits() (string, error) {
 }
 
 // ValidateWithip -
-func (z *ZeroBounce) ValidateWithip(email string, ipaddress ...string) (ValidateWithipResponse, error) {
-	var validate ValidateWithipResponse
+func (z *ZeroBounce) ValidateWithip(email string, ipaddress ...string) (*ValidateWithipResponse, error) {
+	validate := &ValidateWithipResponse{}
 	params := url.Values{}
 	addr := "99.123.12.122"
 
@@ -137,17 +137,7 @@ func (z *ZeroBounce) ValidateWithip(email string, ipaddress ...string) (Validate
 	params.Set("ipaddress", addr)
 	params.Set("email", email)
 
-	response, err := http.Get(z.BuildURL("validatewithip", params))
+	err := Request(z.BuildURL("validatewithip", params), validate)
 
-	if err != nil {
-		return validate, err
-	}
-
-	defer response.Body.Close()
-
-	if err := json.NewDecoder(response.Body).Decode(&validate); err != nil {
-		return validate, err
-	}
-
-	return validate, nil
+	return validate, err
 }
