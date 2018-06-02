@@ -67,3 +67,23 @@ func Test_status_should_be_valid(t *testing.T) {
 	assert.Equal(t, result.Address, response.Address)
 	assert.Equal(t, result.Status, response.Status)
 }
+
+func Test_status_should_be_valid_when_called_validate_service(t *testing.T) {
+	defer gock.Off()
+
+	response := ValidateResponse{
+		Address: "flowerjill@aol.com",
+		Status:  "Valid",
+	}
+
+	gock.New(URI).
+		Get("/validate").
+		Reply(200).
+		JSON(response)
+
+	zero := ZeroBounce{Apikey: "xxxxxxx"}
+	result := zero.Validate("contato@heriquelopes.com.br")
+
+	assert.Equal(t, result.Address, response.Address)
+	assert.Equal(t, result.Status, response.Status)
+}
