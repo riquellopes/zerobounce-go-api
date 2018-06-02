@@ -2,6 +2,7 @@ package zerobounce
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net/http"
 )
@@ -78,23 +79,27 @@ func (z *ZeroBounce) Validate(email string) ValidateResponse {
 }
 
 // GetCredits -
-func (z *ZeroBounce) GetCredits() string {
+func (z *ZeroBounce) GetCredits() (string, error) {
 	url := fmt.Sprintf("%s/%s?apikey=%s", URI, "getcredits", z.Apikey)
 
 	response, err := http.Get(url)
 
 	if err != nil {
-		fmt.Println(err)
+		return "", err
+	}
+
+	if response.StatusCode != 200 {
+		return "", errors.New("server error")
 	}
 
 	defer response.Body.Close()
 	var credit GetCreditsResponse
 
 	if err := json.NewDecoder(response.Body).Decode(&credit); err != nil {
-		fmt.Println(err)
+		return "", err
 	}
 
-	return credit.Credits
+	return credit.Credits, nil
 }
 
 // ValidateWithip -
