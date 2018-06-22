@@ -6,5 +6,5 @@
 @TODO List
 -----
 * [ ] Create the documentation
-* [ ] Add coverage support.
+* [x] Add coverage support.
 * [x] Add unit tests.
