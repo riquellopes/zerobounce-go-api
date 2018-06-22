@@ -22,6 +22,19 @@ func Test_should_get_95_credits(t *testing.T) {
 	assert.Equal(t, result, "95")
 }
 
+func Test_when_the_status_is_500_method_should_get_error(t *testing.T) {
+	defer gock.Off()
+
+	gock.New(URI).
+		Get("/getcredits").
+		Reply(500)
+
+	zero := ZeroBounce{Apikey: "xxxxxxx"}
+	_, error := zero.GetCredits()
+
+	assert.NotNil(t, error)
+}
+
 func Test_should_get_error_when_server_response_status_500(t *testing.T) {
 	defer gock.Off()
 
