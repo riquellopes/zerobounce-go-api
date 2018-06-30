@@ -36,12 +36,7 @@ func Request(url string, object ResponseBase) error {
 	}
 
 	defer response.Body.Close()
-
-	if err := json.NewDecoder(response.Body).Decode(&object); err != nil {
-		return err
-	}
-
-	return nil
+	return json.NewDecoder(response.Body).Decode(&object)
 }
 
 // ZeroBounce -
