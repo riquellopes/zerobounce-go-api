@@ -17,9 +17,10 @@ func Test_should_get_95_credits(t *testing.T) {
 		JSON(map[string]string{"Credits": "95"})
 
 	zero := ZeroBounce{Apikey: "xxxxxxx"}
-	result, _ := zero.GetCredits()
+	result, err := zero.GetCredits()
 
-	assert.Equal(t, result, "95")
+	assert.NoError(t, err)
+	assert.Equal(t, 95, result)
 }
 
 func Test_when_the_status_is_500_method_should_get_error(t *testing.T) {
@@ -53,29 +54,29 @@ func Test_should_build_url_with_email(t *testing.T) {
 	params.Set("email", "jonas@example.com")
 	zero := ZeroBounce{Apikey: "xxxxxxx"}
 
-	assert.Equal(t, zero.BuildURL("score", params), "https://api.zerobounce.net/v1/score?apikey=xxxxxxx&email=jonas%40example.com")
+	assert.Equal(t, zero.BuildURL("score", params), "https://api.zerobounce.net/v2/score?api_key=xxxxxxx&email=jonas%40example.com")
 }
 
 func Test_should_get_url_without_query_string_params(t *testing.T) {
 	zero := ZeroBounce{Apikey: "xxxxxxx"}
-	assert.Equal(t, zero.BuildURL("score"), "https://api.zerobounce.net/v1/score?apikey=xxxxxxx")
+	assert.Equal(t, zero.BuildURL("score"), "https://api.zerobounce.net/v2/score?api_key=xxxxxxx")
 }
 
 func Test_status_should_be_valid(t *testing.T) {
 	defer gock.Off()
 
-	response := ValidateWithipResponse{
+	response := ValidateResponse{
 		Address: "flowerjill@aol.com",
 		Status:  "Valid",
 	}
 
 	gock.New(URI).
-		Get("/validatewithip").
+		Get("/validate").
 		Reply(200).
 		JSON(response)
 
 	zero := ZeroBounce{Apikey: "xxxxxxx"}
-	result, _ := zero.ValidateWithip("contato@heriquelopes.com.br")
+	result, _ := zero.ValidateWithIP("contato@heriquelopes.com.br", "99.123.12.122")
 
 	assert.Equal(t, result.Address, response.Address)
 	assert.Equal(t, result.Status, response.Status)
