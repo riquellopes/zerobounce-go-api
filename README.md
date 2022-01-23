@@ -12,7 +12,7 @@ go get github.com/riquellopes/zerobounce-go-api
 ```
 
 # Usage #
-First you will need an api token. Can you create an account at [here](https://www.zerobounce.net/members/register/) and get you token.
+First you will need an api token. Can you create an account at [here](https://www.zerobounce.net/members/register/) and get your token.
 
 ### Quick start ###
 ```go
